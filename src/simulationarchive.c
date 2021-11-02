@@ -374,7 +374,7 @@ void reb_read_simulationarchive_with_messages(struct reb_simulationarchive* sa, 
                     }
                 }while(blob_finished==0 && read_error==0);
                 if (read_error){
-                    if (debug) printf("SA Error. Error while reading current blob.\n");
+                    if (debug) fprintf(stderr,"SA Error. Error while reading current blob.\n");
                     // Error during reading. Current snapshot is corrupt.
                     break;
                 }
@@ -383,7 +383,7 @@ void reb_read_simulationarchive_with_messages(struct reb_simulationarchive* sa, 
                     struct reb_simulationarchive_blob16 blob = {0};
                     size_t r3 = fread(&blob, sizeof(struct reb_simulationarchive_blob16), 1, sa->inf);
                     if (r3!=1){ // Next snapshot is definitly corrupted. Assume current might also be.
-                        if (debug) printf("SA Error. Error while reading next blob.\n");
+                        if (debug) fprintf(stderr,"SA Error. Error while reading next blob.\n");
                         read_error = 1;
                         break;
                     }
@@ -391,7 +391,7 @@ void reb_read_simulationarchive_with_messages(struct reb_simulationarchive* sa, 
                         // Checking the offsets. Acts like a checksum.
                         if (blob.offset_prev + sizeof(struct reb_simulationarchive_blob16) != ftell(sa->inf) - sa->offset[i] ){
                             // Offsets don't work. Next snapshot is definitly corrupted. Assume current one as well.
-                            if (debug) printf("SA Error. Offset mismatch: %zu != %ld.\n",blob.offset_prev + sizeof(struct reb_simulationarchive_blob16), ftell(sa->inf) - sa->offset[i] );
+                            if (debug) fprintf(stderr,"SA Error. Offset mismatch: %zu != %ld.\n",blob.offset_prev + sizeof(struct reb_simulationarchive_blob16), ftell(sa->inf) - sa->offset[i] );
                             read_error = 1;
                             break;
                         }
@@ -412,7 +412,7 @@ void reb_read_simulationarchive_with_messages(struct reb_simulationarchive* sa, 
                     struct reb_simulationarchive_blob blob = {0};
                     size_t r3 = fread(&blob, sizeof(struct reb_simulationarchive_blob), 1, sa->inf);
                     if (r3!=1){ // Next snapshot is definitly corrupted. Assume current might also be.
-                        if (debug) printf("SA Error. Error while reading next blob.\n");
+                        if (debug) fprintf(stderr,"SA Error. Error while reading next blob.\n");
                         read_error = 1;
                         break;
                     }
@@ -420,7 +420,7 @@ void reb_read_simulationarchive_with_messages(struct reb_simulationarchive* sa, 
                         // Checking the offsets. Acts like a checksum.
                         if (blob.offset_prev + sizeof(struct reb_simulationarchive_blob) != ftell(sa->inf) - sa->offset[i] ){
                             // Offsets don't work. Next snapshot is definitly corrupted. Assume current one as well.
-                            if (debug) printf("SA Error. Offset mismatch: %zu != %ld.\n",blob.offset_prev + sizeof(struct reb_simulationarchive_blob), ftell(sa->inf) - sa->offset[i] );
+                            if (debug) fprintf(stderr,"SA Error. Offset mismatch: %zu != %ld.\n",blob.offset_prev + sizeof(struct reb_simulationarchive_blob), ftell(sa->inf) - sa->offset[i] );
                             read_error = 1;
                             break;
                         }

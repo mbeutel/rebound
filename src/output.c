@@ -112,24 +112,24 @@ void reb_output_timing(struct reb_simulation* r, const double tmax){
     if (r->output_timing_last==-1){
         r->output_timing_last = temp;
     }else{
-        printf("\r");
+        fprintf(stderr,"\n");
 #ifdef PROFILING
-        fputs("\033[A\033[2K",stdout);
+        fputs("\033[A\033[2K",stderr);
         for (int i=0;i<=PROFILING_CAT_NUM;i++){
-            fputs("\033[A\033[2K",stdout);
+            fputs("\033[A\033[2K",stderr);
         }
 #endif // PROFILING
     }
-    printf("N_tot= %- 9d  ",N_tot);
+    fprintf(stderr,"N_tot= %- 9d  ",N_tot);
     if (r->integrator==REB_INTEGRATOR_SEI){
-        printf("t= %- 9f [orb]  ",r->t*r->ri_sei.OMEGA/2./M_PI);
+        fprintf(stderr,"t= %- 9f [orb]  ",r->t*r->ri_sei.OMEGA/2./M_PI);
     }else{
-        printf("t= %- 9f  ",r->t);
+        fprintf(stderr,"t= %- 9f  ",r->t);
     }
-    printf("dt= %- 9f  ",r->dt);
-    printf("cpu= %- 9f [s]  ",temp-r->output_timing_last);
+    fprintf(stderr,"dt= %- 9f  ",r->dt);
+    fprintf(stderr,"cpu= %- 9f [s]  ",temp-r->output_timing_last);
     if (tmax>0){
-        printf("t/tmax= %5.2f%%",r->t/tmax*100.0);
+        fprintf(stderr,"t/tmax= %5.2f%%",r->t/tmax*100.0);
     }
 #ifdef PROFILING
     if (profiling_timing_initial==0){
@@ -137,40 +137,40 @@ void reb_output_timing(struct reb_simulation* r, const double tmax){
         gettimeofday(&tim, NULL);
         profiling_timing_initial = tim.tv_sec+(tim.tv_usec/1000000.0);
     }
-    printf("\nCATEGORY       TIME \n");
+    fprintf(stderr,"\nCATEGORY       TIME \n");
     double _sum = 0;
     for (int i=0;i<=PROFILING_CAT_NUM;i++){
         switch (i){
             case PROFILING_CAT_INTEGRATOR:
-                printf("Integrator     ");
+                fprintf(stderr,"Integrator     ");
                 break;
             case PROFILING_CAT_BOUNDARY:
-                printf("Boundary check ");
+                fprintf(stderr,"Boundary check ");
                 break;
             case PROFILING_CAT_GRAVITY:
-                printf("Gravity/Forces ");
+                fprintf(stderr,"Gravity/Forces ");
                 break;
             case PROFILING_CAT_COLLISION:
-                printf("Collisions     ");
+                fprintf(stderr,"Collisions     ");
                 break;
 #ifdef OPENGL
             case PROFILING_CAT_VISUALIZATION:
-                printf("Visualization  ");
+                fprintf(stderr,"Visualization  ");
                 break;
 #endif // OPENGL
             case PROFILING_CAT_NUM:
-                printf("Other          ");
+                fprintf(stderr,"Other          ");
                 break;
         }
         if (i==PROFILING_CAT_NUM){
-            printf("%5.2f%%",(1.-_sum/(profiling_time_final - profiling_timing_initial))*100.);
+            fprintf(stderr,"%5.2f%%",(1.-_sum/(profiling_time_final - profiling_timing_initial))*100.);
         }else{
-            printf("%5.2f%%\n",profiling_time_sum[i]/(profiling_time_final - profiling_timing_initial)*100.);
+            fprintf(stderr,"%5.2f%%\n",profiling_time_sum[i]/(profiling_time_final - profiling_timing_initial)*100.);
             _sum += profiling_time_sum[i];
         }
     }
 #endif // PROFILING
-    fflush(stdout);
+    fflush(stderr);
     r->output_timing_last = temp;
 }
 

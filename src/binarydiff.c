@@ -60,7 +60,7 @@ void reb_binary_diff(char* buf1, size_t size1, char* buf2, size_t size2, char** 
 
 int reb_binary_diff_with_options(char* buf1, size_t size1, char* buf2, size_t size2, char** bufp, size_t* sizep, int output_option){
     if (!buf1 || !buf2 || size1<64 || size2<64){
-        printf("Cannot read input buffers.\n");
+        fprintf(stderr,"Cannot read input buffers.\n");
         return 0;
     }
 
@@ -74,7 +74,7 @@ int reb_binary_diff_with_options(char* buf1, size_t size1, char* buf2, size_t si
 
     // Header.
     if(memcmp(buf1,buf2,64)!=0){
-        printf("Header in binary files are different.\n");
+        fprintf(stderr,"Header in binary files are different.\n");
     }
 
     size_t pos1 = 64;
@@ -125,7 +125,7 @@ int reb_binary_diff_with_options(char* buf1, size_t size1, char* buf2, size_t si
                         reb_output_stream_write(bufp, &allocatedsize, sizep, &field1,sizeof(struct reb_binary_field));
                         break;
                     case 1:
-                        printf("Field %d not in simulation 2.\n",field1.type);
+                        fprintf(stderr,"Field %d not in simulation 2.\n",field1.type);
                         break;
                     default:
                         break;
@@ -134,8 +134,8 @@ int reb_binary_diff_with_options(char* buf1, size_t size1, char* buf2, size_t si
             }
         }
         // Can assume field1.type == field2.type from here on
-        if (pos1+field1.size>size1) printf("Corrupt binary file buf1.\n");
-        if (pos2+field2.size>size2) printf("Corrupt binary file buf2.\n");
+        if (pos1+field1.size>size1) fprintf(stderr,"Corrupt binary file buf1.\n");
+        if (pos2+field2.size>size2) fprintf(stderr,"Corrupt binary file buf2.\n");
         int fields_differ = 0;
         if (field1.size==field2.size){
             switch (field1.type){
@@ -169,7 +169,7 @@ int reb_binary_diff_with_options(char* buf1, size_t size1, char* buf2, size_t si
                     reb_output_stream_write(bufp, &allocatedsize, sizep, buf2+pos2,field2.size);
                     break;
                 case 1:
-                    printf("Field %d differs.\n",field1.type);
+                    fprintf(stderr,"Field %d differs.\n",field1.type);
                     break;
                 default:
                     break;
@@ -234,7 +234,7 @@ int reb_binary_diff_with_options(char* buf1, size_t size1, char* buf2, size_t si
                 reb_output_stream_write(bufp, &allocatedsize, sizep, buf2+pos2,field2.size);
                 break;
             case 1:
-                printf("Field %d not in simulation 1.\n",field2.type);
+                fprintf(stderr,"Field %d not in simulation 1.\n",field2.type);
                 break;
             default:
                 break;

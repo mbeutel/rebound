@@ -211,12 +211,12 @@ static int loadShader(const char* vert_source, const char* frag_source){
     GLuint _program = glCreateProgram();
     
     if(!compileShader(&vertShader, GL_VERTEX_SHADER, vert_source)) {
-        printf("Failed to compile vertex shader.\n");
+        fprintf(stderr,"Failed to compile vertex shader.\n");
         return -1;
     }
     
     if (!compileShader(&fragShader, GL_FRAGMENT_SHADER, frag_source)){
-        printf("Failed to compile fragment shader.\n");
+        fprintf(stderr,"Failed to compile fragment shader.\n");
         return -1;
     }
     
@@ -224,7 +224,7 @@ static int loadShader(const char* vert_source, const char* frag_source){
     glAttachShader(_program, fragShader);
     
     if (!linkProgram(_program)) {
-        printf("Failed to link shader.\n");
+        fprintf(stderr,"Failed to link shader.\n");
         return -1;
     }
 
