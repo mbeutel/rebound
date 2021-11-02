@@ -1,0 +1,5 @@
+LIBRARY rebound
+
+EXPORTS
+    reb_mpi_init
+    reb_mpi_finalize

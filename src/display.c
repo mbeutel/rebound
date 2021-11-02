@@ -28,11 +28,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
-#include <unistd.h>
 #include <pthread.h>
 #include <string.h>
 #include <sys/stat.h>
-#include <sys/time.h>
 #include "rebound.h"
 #include "display.h"
 #include "tools.h"
@@ -41,6 +39,7 @@
 #include "display.h"
 #include "output.h"
 #include "integrator.h"
+#include "posix_polyfill.h"
 #define MAX(a, b) ((a) < (b) ? (b) : (a))       ///< Returns the maximum of a and b
 
 #ifdef OPENGL
@@ -1151,9 +1150,9 @@ void reb_check_for_display_heartbeat(struct reb_simulation* const r){
     if (r->display_heartbeat){                          // Display Heartbeat
         struct timeval tim;
         gettimeofday(&tim, NULL);
-        unsigned long milis = (tim.tv_sec+(tim.tv_usec/1000000.0))*1000;
-        if (r->display_clock==0 || (milis - r->display_clock)>25){
-            r->display_clock = milis;
+        time_t millis = (tim.tv_sec+(tim.tv_usec/1000000.0))*1000;
+        if (r->display_clock==0 || (millis - r->display_clock)>25){
+            r->display_clock = millis;
             r->display_heartbeat(r); 
         }
     }

@@ -24,11 +24,9 @@
  */
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
 #include <math.h>
 #include <time.h>
 #include <string.h>
-#include <sys/time.h>
 #include <sys/stat.h>
 #include <stdint.h>
 #include "particle.h"
@@ -41,7 +39,7 @@
 #include "integrator_ias15.h"
 
 
-void reb_create_simulation_from_simulationarchive_with_messages(struct reb_simulation* r, struct reb_simulationarchive* sa, long snapshot, enum reb_input_binary_messages* warnings){
+void reb_create_simulation_from_simulationarchive_with_messages(struct reb_simulation* r, struct reb_simulationarchive* sa, int64_t snapshot, enum reb_input_binary_messages* warnings){
     FILE* inf = sa->inf;
     if (inf == NULL){
         *warnings |= REB_INPUT_BINARY_ERROR_FILENOTOPEN;
@@ -223,7 +221,7 @@ void reb_create_simulation_from_simulationarchive_with_messages(struct reb_simul
 }
 
 
-struct reb_simulation* reb_create_simulation_from_simulationarchive(struct reb_simulationarchive* sa, long snapshot){
+struct reb_simulation* reb_create_simulation_from_simulationarchive(struct reb_simulationarchive* sa, int64_t snapshot){
     if (sa==NULL) return NULL;
     enum reb_input_binary_messages warnings = REB_INPUT_BINARY_WARNING_NONE;
     struct reb_simulation* r = reb_create_simulation();
@@ -253,31 +251,32 @@ void reb_read_simulationarchive_with_messages(struct reb_simulationarchive* sa, 
             case REB_BINARY_FIELD_TYPE_HEADER:
                 //fseek(sa->inf,64 - sizeof(struct reb_binary_field),SEEK_CUR);
                 {
-                    long objects = 0;
+                    long long objects = 0;
                     // Input header.
-                    const long bufsize = 64 - sizeof(struct reb_binary_field);
-                    char readbuf[bufsize], curvbuf[bufsize];
+                    #define BUFSIZE (64 - sizeof(struct reb_binary_field))
+                    char readbuf[BUFSIZE], curvbuf[BUFSIZE];
                     const char* header = "REBOUND Binary File. Version: ";
                     sprintf(curvbuf,"%s%s",header+sizeof(struct reb_binary_field), reb_version_str);
                     
-                    objects += fread(readbuf,sizeof(char),bufsize,sa->inf);
+                    objects += fread(readbuf,sizeof(char),BUFSIZE,sa->inf);
                     // Note: following compares version, but ignores githash.
-                    if(strncmp(readbuf,curvbuf,bufsize)!=0){
+                    if(strncmp(readbuf,curvbuf,BUFSIZE)!=0){
                         *warnings |= REB_INPUT_BINARY_WARNING_VERSION;
                     }
+                    #undef BUFSIZE
                 }
                 break;
             case REB_BINARY_FIELD_TYPE_T:
                 fread(&t0, sizeof(double),1,sa->inf);
                 break;
             case REB_BINARY_FIELD_TYPE_SAVERSION:
-                fread(&(sa->version), sizeof(int),1,sa->inf);
+                fread(&(sa->version), sizeof(int32_t),1,sa->inf);
                 break;
             case REB_BINARY_FIELD_TYPE_SASIZESNAPSHOT:
-                fread(&(sa->size_snapshot), sizeof(long),1,sa->inf);
+                fread(&(sa->size_snapshot), sizeof(int64_t),1,sa->inf);
                 break;
             case REB_BINARY_FIELD_TYPE_SASIZEFIRST:
-                fread(&(sa->size_first), sizeof(long),1,sa->inf);
+                fread(&(sa->size_first), sizeof(int64_t),1,sa->inf);
                 break;
             case REB_BINARY_FIELD_TYPE_SAAUTOWALLTIME:
                 fread(&(sa->auto_walltime), sizeof(double),1,sa->inf);
@@ -286,7 +285,7 @@ void reb_read_simulationarchive_with_messages(struct reb_simulationarchive* sa, 
                 fread(&(sa->auto_interval), sizeof(double),1,sa->inf);
                 break;
             case REB_BINARY_FIELD_TYPE_SAAUTOSTEP:
-                fread(&(sa->auto_step), sizeof(unsigned long long),1,sa->inf);
+                fread(&(sa->auto_step), sizeof(uint64_t),1,sa->inf);
                 break;
             default:
                 fseek(sa->inf,field.size,SEEK_CUR);
@@ -309,7 +308,7 @@ void reb_read_simulationarchive_with_messages(struct reb_simulationarchive* sa, 
         sa->offset = malloc(sizeof(uint32_t)*sa->nblobs);
         sa->t[0] = t0;
         sa->offset[0] = 0;
-        for(long i=1;i<sa->nblobs;i++){
+        for(int64_t i=1;i<sa->nblobs;i++){
             double offset = sa->size_first+(i-1)*sa->size_snapshot;
             fseek(sa->inf, offset, SEEK_SET);  
             fread(&(sa->t[i]),sizeof(double), 1, sa->inf);
@@ -320,14 +319,14 @@ void reb_read_simulationarchive_with_messages(struct reb_simulationarchive* sa, 
         if (debug) printf("=============\n");
         if (debug) printf("SA Version: 2\n");
         if (sa_index == NULL){ // Need to construct offset index from file.
-            long nblobsmax = 1024;
+            int64_t nblobsmax = 1024;
             sa->t = malloc(sizeof(double)*nblobsmax);
             sa->offset = malloc(sizeof(uint32_t)*nblobsmax);
             fseek(sa->inf, 0, SEEK_SET);  
             sa->nblobs = 0;
             int read_error = 0;
             struct reb_binary_field lastreadfield = {0};
-            for(long i=0;i<nblobsmax;i++){
+            for(int64_t i=0;i<nblobsmax;i++){
                 struct reb_binary_field field = {0};
                 sa->offset[i] = ftell(sa->inf);
                 int blob_finished = 0;
@@ -392,7 +391,7 @@ void reb_read_simulationarchive_with_messages(struct reb_simulationarchive* sa, 
                         // Checking the offsets. Acts like a checksum.
                         if (blob.offset_prev + sizeof(struct reb_simulationarchive_blob16) != ftell(sa->inf) - sa->offset[i] ){
                             // Offsets don't work. Next snapshot is definitly corrupted. Assume current one as well.
-                            if (debug) printf("SA Error. Offset mismatch: %lu != %ld.\n",blob.offset_prev + sizeof(struct reb_simulationarchive_blob16), ftell(sa->inf) - sa->offset[i] );
+                            if (debug) printf("SA Error. Offset mismatch: %zu != %ld.\n",blob.offset_prev + sizeof(struct reb_simulationarchive_blob16), ftell(sa->inf) - sa->offset[i] );
                             read_error = 1;
                             break;
                         }
@@ -421,7 +420,7 @@ void reb_read_simulationarchive_with_messages(struct reb_simulationarchive* sa, 
                         // Checking the offsets. Acts like a checksum.
                         if (blob.offset_prev + sizeof(struct reb_simulationarchive_blob) != ftell(sa->inf) - sa->offset[i] ){
                             // Offsets don't work. Next snapshot is definitly corrupted. Assume current one as well.
-                            if (debug) printf("SA Error. Offset mismatch: %lu != %ld.\n",blob.offset_prev + sizeof(struct reb_simulationarchive_blob), ftell(sa->inf) - sa->offset[i] );
+                            if (debug) printf("SA Error. Offset mismatch: %zu != %ld.\n",blob.offset_prev + sizeof(struct reb_simulationarchive_blob), ftell(sa->inf) - sa->offset[i] );
                             read_error = 1;
                             break;
                         }
@@ -950,7 +949,7 @@ void reb_simulationarchive_automate_walltime(struct reb_simulation* const r, con
     r->simulationarchive_next = r->walltime;
 }
 
-void reb_simulationarchive_automate_step(struct reb_simulation* const r, const char* filename, unsigned long long step){
+void reb_simulationarchive_automate_step(struct reb_simulation* const r, const char* filename, uint64_t step){
     if(_reb_simulationarchive_automate_set_filename(r,filename)<0) return;
     if(r->simulationarchive_auto_step != step){
         // Only update simulationarchive_next if interval changed. 

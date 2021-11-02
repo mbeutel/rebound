@@ -31,7 +31,6 @@
  */
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
 #include <math.h>
 #include <time.h>
 #include "rebound.h"
@@ -143,7 +142,7 @@ static void operator_H012(double dt, const struct reb_simulation_integrator_sei 
  * @brief This function applies the acceleration due to the PHI1 term.
  * @details It is only exact if the forces are velocity independet (i.e. gravity).
  * If the forces are velocity dependent, it breaks the symmetry of the scheme,
- * making it firsr-order and non-symplectic. As long as these forces are small,
+ * making it first-order and non-symplectic. As long as these forces are small,
  * this should not be visible. However, it is worth keeping in mind. 
  * @param p reb_particle to evolve.
  * @param dt Timestep

@@ -1,0 +1,244 @@
+LIBRARY rebound
+
+EXPORTS
+    reb_build_str
+    reb_version_str
+    reb_githash_str
+    reb_logo
+    reb_sigint
+
+    ; Simulation life cycle
+    reb_create_simulation
+    reb_init_simulation
+    reb_free_simulation
+    reb_copy_simulation
+    reb_free_pointers
+    reb_reset_temporary_pointers
+    reb_reset_function_pointers
+    reb_configure_box
+
+    ; Messages and control functions
+    reb_exit
+    reb_warning
+    reb_error
+    reb_get_next_message
+
+    ; Timestepping
+    reb_step
+    reb_steps
+    reb_integrate
+    reb_integrator_synchronize
+    reb_integrator_reset
+    reb_update_acceleration
+
+    ; Compare simulations
+    reb_diff_simulations
+
+    ; Mercurius switching functions
+    reb_integrator_mercurius_L_mercury
+    reb_integrator_mercurius_L_infinity
+    reb_integrator_mercurius_L_C4
+    reb_integrator_mercurius_L_C5
+
+    ; Collision resolve functions
+    reb_collision_resolve_halt
+    reb_collision_resolve_hardsphere
+    reb_collision_resolve_merge
+
+    ; Random sampling
+    reb_random_uniform
+    reb_random_powerlaw
+    reb_random_normal
+    reb_random_rayleigh
+
+    ; Serialization functions.
+    reb_serialize_particle_data
+    reb_set_serialized_particle_data
+
+    ; Output functions
+    reb_output_check
+    reb_output_timing
+    reb_output_orbits
+    reb_output_binary
+    reb_output_ascii
+    reb_output_binary_positions
+    reb_output_velocity_dispersion
+
+    ; Compares two simulations, stores difference in buffer.
+    reb_binary_diff
+    reb_binary_diff_with_options
+
+    ; Input functions
+    reb_create_simulation_from_binary
+
+    ; Miscellaneous functions
+    reb_hash
+    reb_tools_mod2pi
+    reb_tools_M_to_f
+    reb_tools_E_to_f
+    reb_tools_M_to_E
+    reb_tools_init_plummer
+    reb_run_heartbeat
+
+    ; Functions to add and initialize particles
+    reb_particle_nan
+    reb_add
+    reb_add_fmt
+    reb_particle_new
+    reb_tools_orbit_to_particle_err
+    reb_tools_orbit_to_particle
+    reb_tools_pal_to_particle
+
+    ; Functions to access and remove particles
+    reb_remove_all
+    reb_remove
+    reb_remove_by_hash
+    reb_get_particle_by_hash
+    reb_get_particle_index
+    reb_get_jacobi_com
+
+    ; Orbit calculation
+    reb_tools_particle_to_orbit_err
+    reb_tools_particle_to_orbit
+
+    ; Chaos indicators
+    reb_tools_megno_init
+    reb_tools_megno_init_seed
+    reb_tools_calculate_megno
+    reb_tools_calculate_lyapunov
+
+    ; Variational equations
+    reb_add_var_1st_order
+    reb_add_var_2nd_order
+
+    ; These functions calculates the first/second derivative of a Keplerian orbit. 
+    reb_derivatives_lambda
+    reb_derivatives_h
+    reb_derivatives_k
+    reb_derivatives_k_k
+    reb_derivatives_h_h
+    reb_derivatives_lambda_lambda
+    reb_derivatives_k_lambda
+    reb_derivatives_h_lambda
+    reb_derivatives_k_h
+    reb_derivatives_a
+    reb_derivatives_a_a
+    reb_derivatives_ix
+    reb_derivatives_ix_ix
+    reb_derivatives_iy
+    reb_derivatives_iy_iy
+    reb_derivatives_k_ix
+    reb_derivatives_h_ix
+    reb_derivatives_lambda_ix
+    reb_derivatives_lambda_iy
+    reb_derivatives_h_iy
+    reb_derivatives_k_iy
+    reb_derivatives_ix_iy
+    reb_derivatives_a_ix
+    reb_derivatives_a_iy
+    reb_derivatives_a_lambda
+    reb_derivatives_a_h
+    reb_derivatives_a_k
+    reb_derivatives_m
+    reb_derivatives_m_a
+    reb_derivatives_m_lambda
+    reb_derivatives_m_h
+    reb_derivatives_m_k
+    reb_derivatives_m_ix
+    reb_derivatives_m_iy
+    reb_derivatives_m_m
+    reb_derivatives_e
+    reb_derivatives_e_e
+    reb_derivatives_inc
+    reb_derivatives_inc_inc
+    reb_derivatives_Omega
+    reb_derivatives_Omega_Omega
+    reb_derivatives_omega
+    reb_derivatives_omega_omega
+    reb_derivatives_f
+    reb_derivatives_f_f
+    reb_derivatives_a_e
+    reb_derivatives_a_inc
+    reb_derivatives_a_Omega
+    reb_derivatives_a_omega
+    reb_derivatives_a_f
+    reb_derivatives_e_inc
+    reb_derivatives_e_Omega
+    reb_derivatives_e_omega
+    reb_derivatives_e_f
+    reb_derivatives_m_e
+    reb_derivatives_inc_Omega
+    reb_derivatives_inc_omega
+    reb_derivatives_inc_f
+    reb_derivatives_m_inc
+    reb_derivatives_omega_Omega
+    reb_derivatives_Omega_f
+    reb_derivatives_m_Omega
+    reb_derivatives_omega_f
+    reb_derivatives_m_omega
+    reb_derivatives_m_f
+
+    ; Functions to operate on particles
+    reb_particle_isub
+    reb_particle_iadd
+    reb_particle_imul
+    reb_particle_distance
+
+    ; Functions to operate on simulations
+    reb_simulation_imul
+    reb_simulation_iadd
+    reb_simulation_isub
+    reb_move_to_hel
+    reb_move_to_com
+
+    ; Diangnostic functions
+    reb_tools_energy
+    reb_tools_angular_momentum
+    reb_get_com
+    reb_get_com_of_pair
+    reb_get_com_range
+
+
+    ; Simulation Archive
+    reb_create_simulation_from_simulationarchive
+    reb_create_simulation_from_simulationarchive_with_messages
+    reb_open_simulationarchive
+    reb_close_simulationarchive
+    reb_simulationarchive_snapshot
+    reb_simulationarchive_automate_interval
+    reb_simulationarchive_automate_walltime
+    reb_simulationarchive_automate_step
+    reb_free_simulationarchive_pointers
+
+
+    ; Functions to convert between coordinate systems
+
+    ;; Jacobi
+    reb_transformations_inertial_to_jacobi_posvel
+    reb_transformations_inertial_to_jacobi_posvelacc
+    reb_transformations_inertial_to_jacobi_acc
+    reb_transformations_jacobi_to_inertial_posvel
+    reb_transformations_jacobi_to_inertial_pos
+    reb_transformations_jacobi_to_inertial_acc
+
+    ;; Democratic heliocentric coordinates
+    reb_transformations_inertial_to_democraticheliocentric_posvel
+    reb_transformations_democraticheliocentric_to_inertial_pos
+    reb_transformations_democraticheliocentric_to_inertial_posvel
+
+    ;; WHDS
+    reb_transformations_inertial_to_whds_posvel
+    reb_transformations_whds_to_inertial_pos
+    reb_transformations_whds_to_inertial_posvel
+
+    ; Temporary. Function declarations needed by REBOUNDx 
+    reb_integrator_ias15_reset
+    reb_integrator_ias15_part2
+    reb_integrator_whfast_from_inertial
+    reb_integrator_whfast_to_inertial
+    reb_integrator_whfast_reset
+    reb_integrator_whfast_init
+    reb_whfast_interaction_step
+    reb_whfast_jump_step
+    reb_whfast_kepler_step
+    reb_whfast_com_step

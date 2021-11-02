@@ -33,3 +33,6 @@ others/*.tar
 docs/c_examples
 problems/
 .vscode/
+.vs/
+CMakeSettings.json
+out/

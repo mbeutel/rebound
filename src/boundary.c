@@ -26,9 +26,9 @@
  *
  */
 
+#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
 #include <math.h>
 #include <time.h>
 #include "particle.h"
@@ -228,6 +228,7 @@ int reb_boundary_particle_is_in_box(const struct reb_simulation* const r, struct
 		case REB_BOUNDARY_NONE:
 			return 1;
 	}
+
+	assert(0); // should not happen
+	return 1;
 }
-
-

@@ -1,0 +1,5 @@
+LIBRARY rebound
+
+EXPORTS
+    ; Wrapper method to set number of OpenMP threads from python.
+    reb_omp_set_num_threads

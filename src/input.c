@@ -24,7 +24,6 @@
  */
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
 #include <math.h>
 #include <time.h>
 #include <getopt.h>
@@ -334,18 +333,19 @@ int reb_input_field(struct reb_simulation* r, FILE* inf, enum reb_input_binary_m
             break;
         case REB_BINARY_FIELD_TYPE_HEADER:
             {
-                long objects = 0;
+                long long objects = 0;
                 // Input header.
-                const long bufsize = 64 - sizeof(struct reb_binary_field);
-                char readbuf[bufsize], curvbuf[bufsize];
+                #define BUFSIZE (64 - sizeof(struct reb_binary_field))
+                char readbuf[BUFSIZE], curvbuf[BUFSIZE];
                 const char* header = "REBOUND Binary File. Version: ";
                 sprintf(curvbuf,"%s%s",header+sizeof(struct reb_binary_field), reb_version_str);
                 
-                objects += reb_fread(readbuf,sizeof(char),bufsize,inf,mem_stream);
+                objects += reb_fread(readbuf,sizeof(char),BUFSIZE,inf,mem_stream);
                 // Note: following compares version, but ignores githash.
-                if(strncmp(readbuf,curvbuf,bufsize)!=0){
+                if(strncmp(readbuf,curvbuf,BUFSIZE)!=0){
                     *warnings |= REB_INPUT_BINARY_WARNING_VERSION;
                 }
+                #undef BUFSIZE
             }
             break;
         default:

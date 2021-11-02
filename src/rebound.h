@@ -26,13 +26,19 @@
 #ifndef _MAIN_H
 #define _MAIN_H
 
-#define REBOUND_RESTRICT restrict
+#if defined(_MSC_VER)
+# define REBOUND_RESTRICT __restrict
+#elif defined(__GNUC__)
+# define REBOUND_RESTRICT __restrict__
+#else
+# define REBOUND_RESTRICT restrict
+#endif
 
 #include <inttypes.h>
 #include <stdint.h>
-#include <sys/time.h>
 #include <pthread.h>
 #include <signal.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <math.h>
 #ifdef MPI
@@ -104,11 +110,11 @@ struct reb_ghostbox{
 struct reb_simulation_integrator_ias15 {
     double epsilon;
     double min_dt;
-    unsigned int epsilon_global;
+    uint32_t epsilon_global;
    
     // Internal use
-    unsigned long iterations_max_exceeded; // Counter how many times the iteration did not converge. 
-    int allocatedN;          
+    uint64_t iterations_max_exceeded; // Counter how many times the iteration did not converge. 
+    int32_t allocatedN;          
     double* REBOUND_RESTRICT at;
     double* REBOUND_RESTRICT x0;
     double* REBOUND_RESTRICT v0;
@@ -125,25 +131,25 @@ struct reb_simulation_integrator_ias15 {
     struct reb_dp7 er;   // Same for e coefficients
 
     int* map;               // internal map to particles (this is an identity map except when MERCURIUS is used
-    int map_allocated_N;    // allocated size for map
+    int32_t map_allocated_N; // allocated size for map
 };
 
 struct reb_simulation_integrator_mercurius {
     double (*L) (const struct reb_simulation* const r, double d, double dcrit);  
     double hillfac;        
-    unsigned int recalculate_coordinates_this_timestep;
-    unsigned int recalculate_dcrit_this_timestep;
-    unsigned int safe_mode;
+    uint32_t recalculate_coordinates_this_timestep;
+    uint32_t recalculate_dcrit_this_timestep;
+    uint32_t safe_mode;
    
     // Internal use
-    unsigned int is_synchronized;   
-    unsigned int mode;              // 0 if WH is operating, 1 if IAS15 is operating.
-    unsigned int encounterN;        // Number of particles currently having an encounter
-    unsigned int encounterNactive;  // Number of active particles currently having an encounter
-    unsigned int tponly_encounter;  // 0 if any encounters are between two massive bodies. 1 if encounters only involve test particles
-    unsigned int allocatedN;
-    unsigned int allocatedN_additionalforces;
-    unsigned int dcrit_allocatedN;  // Current size of dcrit arrays
+    uint32_t is_synchronized;   
+    uint32_t mode;              // 0 if WH is operating, 1 if IAS15 is operating.
+    uint32_t encounterN;        // Number of particles currently having an encounter
+    uint32_t encounterNactive;  // Number of active particles currently having an encounter
+    uint32_t tponly_encounter;  // 0 if any encounters are between two massive bodies. 1 if encounters only involve test particles
+    uint32_t allocatedN;
+    uint32_t allocatedN_additionalforces;
+    uint32_t dcrit_allocatedN;  // Current size of dcrit arrays
     double* dcrit;                  // Precalculated switching radii for particles
     struct reb_particle* REBOUND_RESTRICT particles_backup; //  contains coordinates before Kepler step for encounter prediction
     struct reb_particle* REBOUND_RESTRICT particles_backup_additionalforces; // contains coordinates before Kepler step for encounter prediction
@@ -184,14 +190,14 @@ struct reb_simulation_integrator_saba {
         REB_SABA_H_8_6_4 = 0x8,// SABAH(8,6,4), 8 stages
         REB_SABA_H_10_6_4 = 0x9,// SABAH(10,6,4), 9 stages
     } type;
-    unsigned int safe_mode;
-    unsigned int is_synchronized;
-    unsigned int keep_unsynchronized;
+    uint32_t safe_mode;
+    uint32_t is_synchronized;
+    uint32_t keep_unsynchronized;
 };
 
 struct reb_simulation_integrator_whfast {
-    unsigned int corrector;
-    unsigned int corrector2;
+    uint32_t corrector;
+    uint32_t corrector2;
     enum {
         REB_WHFAST_KERNEL_DEFAULT = 0,
         REB_WHFAST_KERNEL_MODIFIEDKICK = 1,
@@ -203,17 +209,17 @@ struct reb_simulation_integrator_whfast {
         REB_WHFAST_COORDINATES_DEMOCRATICHELIOCENTRIC = 1,      ///< Democratic Heliocentric coordinates
         REB_WHFAST_COORDINATES_WHDS = 2,                        ///< WHDS coordinates (Hernandez and Dehnen, 2017)
         } coordinates;
-    unsigned int recalculate_coordinates_this_timestep;
-    unsigned int safe_mode;
-    unsigned int keep_unsynchronized;
+    uint32_t recalculate_coordinates_this_timestep;
+    uint32_t safe_mode;
+    uint32_t keep_unsynchronized;
     // Internal 
     struct reb_particle* REBOUND_RESTRICT p_jh;     // Jacobi/heliocentric/WHDS coordinates
     struct reb_particle* REBOUND_RESTRICT p_temp;   // Used for lazy implementer's kernel 
-    unsigned int is_synchronized;
-    unsigned int allocated_N;
-    unsigned int allocated_Ntemp;
-    unsigned int timestep_warning;
-    unsigned int recalculate_coordinates_but_not_synchronized_warning;
+    uint32_t is_synchronized;
+    uint32_t allocated_N;
+    uint32_t allocated_Ntemp;
+    uint32_t timestep_warning;
+    uint32_t recalculate_coordinates_but_not_synchronized_warning;
 };
 
 enum REB_EOS_TYPE {
@@ -231,9 +237,9 @@ enum REB_EOS_TYPE {
 struct reb_simulation_integrator_eos {
     enum REB_EOS_TYPE phi0;
     enum REB_EOS_TYPE phi1;
-    unsigned int n;
-    unsigned int safe_mode;
-    unsigned int is_synchronized;
+    uint32_t n;
+    uint32_t safe_mode;
+    uint32_t is_synchronized;
 };
 
 
@@ -251,17 +257,17 @@ struct reb_particle_int {
 struct reb_simulation_integrator_janus {
     double scale_pos;
     double scale_vel;
-    unsigned int order;
-    unsigned int recalculate_integer_coordinates_this_timestep;
+    uint32_t order;
+    uint32_t recalculate_integer_coordinates_this_timestep;
     struct reb_particle_int* REBOUND_RESTRICT p_int;
-    unsigned int allocated_N;
+    uint32_t allocated_N;
 };
 
 struct reb_collision{
-    int p1;
-    int p2;
+    int32_t p1;
+    int32_t p2;
     struct reb_ghostbox gb;
-    int ri;
+    int32_t ri;
 };
 
 // Possible return values of of rebound_integrate
@@ -431,39 +437,39 @@ struct reb_simulation {
     double  softening;
     double  dt;
     double  dt_last_done;
-    unsigned long long steps_done;
-    int     N;
-    int     N_var;
-    int     var_config_N;
+    uint64_t steps_done;
+    int32_t N;
+    int32_t N_var;
+    int32_t var_config_N;
     struct reb_variational_configuration* var_config;   // These configuration structs contain details on variational particles. 
-    int     N_active;
-    int     testparticle_type;
-    int     testparticle_hidewarnings;
+    int32_t N_active;
+    int32_t testparticle_type;
+    int32_t testparticle_hidewarnings;
     struct reb_hash_pointer_pair* particle_lookup_table; // Array of pairs that map particles' hashes to their index in the particles array.
-    int     hash_ctr;               // Counter for number of assigned hashes to assign unique values.
-    int     N_lookup;               // Number of entries in the particle lookup table.
-    int     allocatedN_lookup;      // Number of lookup table entries allocated.
-    int     allocatedN;             // Current maximum space allocated in the particles array on this node. 
+    int32_t hash_ctr;               // Counter for number of assigned hashes to assign unique values.
+    int32_t N_lookup;               // Number of entries in the particle lookup table.
+    int32_t allocatedN_lookup;      // Number of lookup table entries allocated.
+    int32_t allocatedN;             // Current maximum space allocated in the particles array on this node. 
     struct reb_particle* particles;
     struct reb_vec3d* gravity_cs;   // Containing the information for compensated gravity summation 
-    int     gravity_cs_allocatedN;
+    int32_t gravity_cs_allocatedN;
     struct reb_treecell** tree_root;// Pointer to the roots of the trees. 
-    int     tree_needs_update;      // Flag to force a tree update (after boundary check)
+    int32_t tree_needs_update;      // Flag to force a tree update (after boundary check)
     double opening_angle2;
     enum REB_STATUS status;
-    int     exact_finish_time;
+    int32_t exact_finish_time;
 
-    unsigned int force_is_velocity_dependent;
-    unsigned int gravity_ignore_terms;
+    uint32_t force_is_velocity_dependent;
+    uint32_t gravity_ignore_terms;
     double output_timing_last;      // Time when reb_output_timing() was called the last time. 
-    unsigned long display_clock;    // Display clock, internal variable for timing refreshs.
-    int save_messages;              // Set to 1 to ignore messages (used in python interface).
+    uint64_t display_clock; // Display clock, internal variable for timing refreshs.
+    int32_t save_messages;              // Set to 1 to ignore messages (used in python interface).
     char** messages;                // Array of strings containing last messages (only used if save_messages==1). 
     double exit_max_distance;
     double exit_min_distance;
     double usleep;
     struct reb_display_data* display_data; // Datastructure stores visualization related data. Does not have to be modified by the user. 
-    int track_energy_offset;
+    int32_t track_energy_offset;
     double energy_offset;
     double walltime;
     uint32_t python_unit_l;         // Only used for when working with units in python.
@@ -474,13 +480,13 @@ struct reb_simulation {
     struct  reb_vec3d boxsize;      // Size of the entire box, root_x*boxsize. 
     double  boxsize_max;            // Maximum size of the entire box in any direction. Set in box_init().
     double  root_size;              // Size of a root box. 
-    int     root_n;                 // Total number of root boxes in all directions, root_nx*root_ny*root_nz. Default: 1. Set in box_init().
-    int     root_nx;                // Number of ghost boxes in x direction. Do not change manually.
-    int     root_ny;
-    int     root_nz;
-    int     nghostx;
-    int     nghosty;
-    int     nghostz;
+    int32_t root_n;                 // Total number of root boxes in all directions, root_nx*root_ny*root_nz. Default: 1. Set in box_init().
+    int32_t root_nx;                // Number of ghost boxes in x direction. Do not change manually.
+    int32_t root_ny;
+    int32_t root_nz;
+    int32_t nghostx;
+    int32_t nghosty;
+    int32_t nghostz;
 
 #ifdef MPI
     int    mpi_id;                              // Unique id of this node (starting at 0). Used for MPI only.
@@ -502,35 +508,35 @@ struct reb_simulation {
     int*   tree_essential_recv_Nmax;            // Maximal length of cell receive beffer before realloc() is needed. 
 #endif // MPI
 
-    int collision_resolve_keep_sorted;
+    int32_t collision_resolve_keep_sorted;
     struct reb_collision* collisions;       ///< Array of all collisions. 
-    int collisions_allocatedN;
+    int32_t collisions_allocatedN;
     double minimum_collision_velocity;
     double collisions_plog;
     double max_radius[2];               // Two largest particle radii, set automatically, needed for collision search.
-    long collisions_Nlog;
+    int64_t collisions_Nlog;
     
     // MEGNO
-    int calculate_megno;    // Do not change manually. Internal flag that determines if megno is calculated (default=0, but megno_init() sets it to the index of variational particles used for megno)
-    double megno_Ys;        // Running megno sum (internal use)
-    double megno_Yss;       // Running megno sum (internal use)
-    double megno_cov_Yt;    // covariance of MEGNO Y and t
-    double megno_var_t;     // variance of t 
-    double megno_mean_t;    // mean of t
-    double megno_mean_Y;    // mean of MEGNO Y
-    long   megno_n;         // number of covariance updates
-    unsigned int rand_seed; // seed for random number generator
+    int32_t calculate_megno;  // Do not change manually. Internal flag that determines if megno is calculated (default=0, but megno_init() sets it to the index of variational particles used for megno)
+    double megno_Ys;          // Running megno sum (internal use)
+    double megno_Yss;         // Running megno sum (internal use)
+    double megno_cov_Yt;      // covariance of MEGNO Y and t
+    double megno_var_t;       // variance of t 
+    double megno_mean_t;      // mean of t
+    double megno_mean_Y;      // mean of MEGNO Y
+    int64_t megno_n;          // number of covariance updates
+    uint32_t rand_seed;       // seed for random number generator
     
      // SimulationArchive 
-    int    simulationarchive_version;               // Version of the SA binary format (1=original/, 2=incremental)
-    long   simulationarchive_size_first;            // (Deprecated SAV1) Size of the initial binary file in a SA
-    long   simulationarchive_size_snapshot;         // (Deprecated SAV1) Size of a snapshot in a SA (other than 1st), in bytes
-    double simulationarchive_auto_interval;         // Current sampling cadence, in code units
-    double simulationarchive_auto_walltime;         // Current sampling cadence, in wall time
-    unsigned long long simulationarchive_auto_step; // Current sampling cadence, in time steps
-    double simulationarchive_next;                  // Next output time (simulation tim or wall time, depending on wether auto_interval or auto_walltime is set)
-    unsigned long long simulationarchive_next_step; // Next output step (only used if auto_steps is set)
-    char*  simulationarchive_filename;              // Name of output file
+    int32_t simulationarchive_version;        // Version of the SA binary format (1=original/, 2=incremental)
+    int64_t simulationarchive_size_first;     // (Deprecated SAV1) Size of the initial binary file in a SA
+    int64_t simulationarchive_size_snapshot;  // (Deprecated SAV1) Size of a snapshot in a SA (other than 1st), in bytes
+    double simulationarchive_auto_interval;   // Current sampling cadence, in code units
+    double simulationarchive_auto_walltime;   // Current sampling cadence, in wall time
+    uint64_t simulationarchive_auto_step;     // Current sampling cadence, in time steps
+    double simulationarchive_next;            // Next output time (simulation tim or wall time, depending on wether auto_interval or auto_walltime is set)
+    uint64_t simulationarchive_next_step;     // Next output step (only used if auto_steps is set)
+    char*  simulationarchive_filename;        // Name of output file
 
     // Modules
     enum {
@@ -749,11 +755,11 @@ double reb_tools_calculate_lyapunov(struct reb_simulation* r);
 // equations.
 struct reb_variational_configuration{
     struct reb_simulation* sim; // Reference to the simulation.
-    int order;                  // Order of the variational equation. 1 or 2. 
-    int index;                  // Index of the first variational particle in the particles array.
-    int testparticle;           // Is this variational configuration describe a test particle? -1 if not.
-    int index_1st_order_a;      // Used for 2nd order variational particles only: Index of the first order variational particle in the particles array.
-    int index_1st_order_b;      // Used for 2nd order variational particles only: Index of the first order variational particle in the particles array.
+    int32_t order;              // Order of the variational equation. 1 or 2. 
+    int32_t index;              // Index of the first variational particle in the particles array.
+    int32_t testparticle;       // Is this variational configuration describe a test particle? -1 if not.
+    int32_t index_1st_order_a;  // Used for 2nd order variational particles only: Index of the first order variational particle in the particles array.
+    int32_t index_1st_order_b;  // Used for 2nd order variational particles only: Index of the first order variational particle in the particles array.
 };
 
 // Add and initialize a set of first order variational particles
@@ -886,24 +892,24 @@ struct reb_simulationarchive_blob16 {  // For backwards compatability only. Will
 struct reb_simulationarchive{
     FILE* inf;                   // File pointer (will be kept open)
     char* filename;              // Filename of open file
-    int version;                 // SimulationArchive version
-    long size_first;             // Size of first snapshot (only used for version 1)
-    long size_snapshot;          // Size of snapshot (only used for version 1)
+    int32_t version;             // SimulationArchive version
+    int64_t size_first;          // Size of first snapshot (only used for version 1)
+    int64_t size_snapshot;       // Size of snapshot (only used for version 1)
     double auto_interval;        // Interval setting used to create SA (if used)
     double auto_walltime;        // Walltime setting used to create SA (if used)
-    unsigned long long auto_step;// Steps in-between SA snapshots (if used)
-    long nblobs;                 // Total number of snapshots (including initial binary)
+    uint64_t auto_step;          // Steps in-between SA snapshots (if used)
+    int64_t nblobs;              // Total number of snapshots (including initial binary)
     uint32_t* offset;            // Index of offsets in file (length nblobs)
     double* t;                   // Index of simulation times in file (length nblobs)
 };
-struct reb_simulation* reb_create_simulation_from_simulationarchive(struct reb_simulationarchive* sa, long snapshot);
-void reb_create_simulation_from_simulationarchive_with_messages(struct reb_simulation* r, struct reb_simulationarchive* sa, long snapshot, enum reb_input_binary_messages* warnings);
+struct reb_simulation* reb_create_simulation_from_simulationarchive(struct reb_simulationarchive* sa, int64_t snapshot);
+void reb_create_simulation_from_simulationarchive_with_messages(struct reb_simulation* r, struct reb_simulationarchive* sa, int64_t snapshot, enum reb_input_binary_messages* warnings);
 struct reb_simulationarchive* reb_open_simulationarchive(const char* filename);
 void reb_close_simulationarchive(struct reb_simulationarchive* sa);
 void reb_simulationarchive_snapshot(struct reb_simulation* r, const char* filename);
 void reb_simulationarchive_automate_interval(struct reb_simulation* const r, const char* filename, double interval);
 void reb_simulationarchive_automate_walltime(struct reb_simulation* const r, const char* filename, double walltime);
-void reb_simulationarchive_automate_step(struct reb_simulation* const r, const char* filename, unsigned long long step);
+void reb_simulationarchive_automate_step(struct reb_simulation* const r, const char* filename, uint64_t step);
 void reb_free_simulationarchive_pointers(struct reb_simulationarchive* sa);
 
 
@@ -961,8 +967,8 @@ struct reb_display_data {
     struct reb_orbit_opengl* orbit_data;
     struct reb_particle* particles_copy;
     struct reb_particle* p_jh_copy;
-    unsigned long allocated_N;
-    unsigned long allocated_N_whfast;
+    unsigned long long allocated_N;
+    unsigned long long allocated_N_whfast;
     unsigned int opengl_enabled;
     double scale;
     double mouse_x;

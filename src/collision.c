@@ -31,7 +31,6 @@
  */
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
 #include <math.h>
 #include <time.h>
 #include "particle.h"
@@ -39,6 +38,7 @@
 #include "rebound.h"
 #include "boundary.h"
 #include "tree.h"
+#include "posix_polyfill.h"
 #ifdef MPI
 #include "communication_mpi.h"
 #endif // MPI

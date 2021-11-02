@@ -24,16 +24,15 @@
  */
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
 #include <math.h>
 #include <time.h>
 #include <string.h>
-#include <sys/time.h>
 #include <stdint.h>
 #include <stdarg.h>
 #include "particle.h"
 #include "rebound.h"
 #include "tools.h"
+#include "posix_polyfill.h"
 
 
 void reb_tools_init_srand(struct reb_simulation* r){

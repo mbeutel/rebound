@@ -1,0 +1,8 @@
+{
+    "name": "rebound",
+    "version-string": "3.18.0",
+    "dependencies": [
+        "pthreads",
+        "getopt"
+    ]
+}
