@@ -1,0 +1,7 @@
+{
+    "name": "rebound-examples-dragforce",
+    "version-string": "1.0.0",
+    "dependencies": [
+        "pthreads"
+    ]
+}
