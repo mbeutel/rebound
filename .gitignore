@@ -36,3 +36,4 @@ problems/
 .vs/
 CMakeSettings.json
 out/
+/reboundx
