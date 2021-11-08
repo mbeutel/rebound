@@ -14,8 +14,9 @@ list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
 # Define build options.
 option(ENABLE_MPI "Compile with MPI support" OFF)
 option(ENABLE_OPENGL "Compile with OpenGL support" OFF)
-option(ENABLE_QUADRUPOLE "TODO" OFF)
-option(ENABLE_PROFILING "Enable profiling" OFF)
+option(ENABLE_OPENMP "Compile with OpenMP parallelization" OFF)
+option(ENABLE_QUADRUPOLE "Calculate mass quadrupole tensor for all non-leaf nodes" OFF)
+option(ENABLE_PROFILING "Enable profiling output" OFF)
 option(USE_FFTW "Use FFTW" OFF)
 
 # Include target definitions.
