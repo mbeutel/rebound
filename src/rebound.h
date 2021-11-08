@@ -48,6 +48,10 @@
 #define GITHASH notavailable0000000000000000000000000001 
 #endif // GITHASH
 
+#ifdef __cplusplus
+extern "C" {
+#endif // __cplusplus
+
 extern const char* reb_build_str;   ///< Date and time build string.
 extern const char* reb_version_str; ///< Version string.
 extern const char* reb_githash_str; ///< Current git hash.
@@ -1026,4 +1030,9 @@ void reb_whfast_interaction_step(struct reb_simulation* const r, const double _d
 void reb_whfast_jump_step(const struct reb_simulation* const r, const double _dt); ///< Internal function
 void reb_whfast_kepler_step(const struct reb_simulation* const r, const double _dt); ///< Internal function
 void reb_whfast_com_step(const struct reb_simulation* const r, const double _dt); ///< Internal function
+
+#ifdef __cplusplus
+} // extern "C"
+#endif // __cplusplus
+
 #endif // _MAIN_H
