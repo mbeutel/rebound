@@ -3,7 +3,17 @@
     "version-string": "3.18.0",
     "dependencies": [
         "pthreads",
-        "getopt",
-        "glfw3"
-    ]
+        "getopt"
+    ],
+    "features": {
+        "opengl": {
+            "description": "OpenGL visualization support",
+            "dependencies": [
+                {
+                    "name": "glfw3",
+                    "default-features": false
+                }
+            ]
+        }
+    }
 }
