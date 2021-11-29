@@ -16,7 +16,9 @@ endif()
 if(ENABLE_OPENGL)
     find_package(glfw3 REQUIRED)
 endif()
-find_package(pthreads REQUIRED)
+if(WIN32)
+    find_package(pthreads REQUIRED)
+endif()
 
 # library target
 add_library(rebound SHARED  # `SHARED` implies position-independent code on platforms that need it
